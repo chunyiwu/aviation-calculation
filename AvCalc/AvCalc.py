@@ -8,15 +8,18 @@ Created on Sun Sep 26 21:06:06 2021
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""Constants/parameters"""
 REarth = 3443.92        # Earth radius in nautical mile
 deg = np.pi / 180   # degrees to radians
 rad = 180 / np.pi   # radians to degrees
 
+
+"""Class definitions"""
 class FlightPlan:
     """
     FlightPlan
     
-    contains a flight plan, with a list of waypoints
+    Contains a flight plan, with a list of waypoints
     """
     
     wps = []
@@ -45,16 +48,13 @@ class FlightPlan:
         plt.xlabel('Longitude [deg]')
         plt.ylabel('Latitude [deg]')
         plt.axis('equal')
-        
-        
-        
-        
+
 
 class Waypoint:
     """
     Waypoint
     
-    contains the name and location of a waypoint
+    Contains the name and location of a waypoint
     """
     
     name = "WPNT"   # name 
@@ -67,8 +67,27 @@ class Waypoint:
         self.lon = lon 
 
 
-
-def getHeadingAndDistance(wp1, wp2):
+""" Aviation calculations """
+def getGreatCircleHeadingDistance(wp1, wp2):
+    """
+    getGreatCircleHeadingDistance
+    
+    Calculate the heading and distance between two way points using the 
+    great circle.
+    
+    Inputs:
+        wp1 - first waypoint
+        wp2 - second waypoint
+    
+    Outputs:
+        head - the true heading between the two points
+        dist - the distance between the two points
+        
+    Reference:
+        https://www.movable-type.co.uk/scripts/latlong.html
+        
+    """
+    
     lat1 = wp1.lat * deg
     lon1 = wp1.lon * deg
     lat2 = wp2.lat * deg
@@ -79,24 +98,66 @@ def getHeadingAndDistance(wp1, wp2):
     
     a = np.sin(dlat/2)*np.sin(dlat/2) + np.cos(lat1)*np.cos(lat2)*np.sin(dlon/2)*np.sin(dlon/2)
     c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1-a));
-    d = REarth * c
+    dist = REarth * c
     
     y = np.sin(dlon) * np.cos(lat2)
     x = np.cos(lat1)*np.sin(lat2) - -np.sin(lat1)*np.cos(lat2)*np.cos(dlon)
     q = np.arctan2(y, x)
     
-    h = np.mod((q*rad), 360)
+    head = q * rad
+    head = np.mod(head, 360)
     
-    return h, d
+    return head, dist
 
-
-wp1 = Waypoint('START',0,0)
-wp2 = Waypoint('END',-1,1)
-
-[head, dist] = getHeadingAndDistance(wp1, wp2)
-
-fp = FlightPlan()
-fp.addWaypoint(wp1)
-fp.addWaypoint(wp2)
-
-fp.plotFlightPlan()
+def getRhumbLineHeadingDistance(wp1, wp2):
+    """
+    getRhumbLineHeadingDistance
+    
+    Calculate the heading and distance between two way points using the 
+    Rhumb Line.
+    
+    Rhumb line provides a constant bearing along the path.
+    
+    Inputs:
+        wp1 - first waypoint
+        wp2 - second waypoint
+    
+    Outputs:
+        head - the true heading between the two points
+        dist - the distance between the two points
+        
+    Reference:
+        https://www.movable-type.co.uk/scripts/latlong.html
+        
+    """    
+    
+    lat1 = wp1.lat * deg
+    lon1 = wp1.lon * deg
+    lat2 = wp2.lat * deg
+    lon2 = wp2.lon * deg
+    
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    
+    dphi = np.log(np.tan(np.pi/4+lat2/2)/np.tan(np.pi/4+lat1/2))
+    if np.abs(dphi) > 1e-12:
+        q = dlat / dphi
+    else:
+        q = np.cos(lat1)
+        
+    if np.abs(dlon) > np.pi:
+        if dlon > 0:
+            dlon = -(2*np.pi-dlon)
+        else:
+            dlon = 2*np.pi+dlon
+    
+    dist = np.sqrt(dlat*dlat+q*q*dlon*dlon) * REarth
+    
+    head = np.arctan2(dlon, dlat) * rad
+    head = np.mod(head, 360)
+    
+    return head, dist
+    
+    
+    
+""" Auxillary functions """
