@@ -6,14 +6,55 @@ Created on Sun Sep 26 21:06:06 2021
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 REarth = 3443.92        # Earth radius in nautical mile
 deg = np.pi / 180   # degrees to radians
 rad = 180 / np.pi   # radians to degrees
 
+class FlightPlan:
+    """
+    FlightPlan
+    
+    contains a flight plan, with a list of waypoints
+    """
+    
+    wps = []
+    
+    """ constructor """    
+    def __init__(self, wps=[]):
+        self.wps = wps
+        
+        
+    """ waypoint edits"""
+    def addWaypoint(self, wp):
+        self.wps.append(wp)
+        
+        
+        
+    """ plotting """
+    def plotFlightPlan(self):
+        lons = []
+        lats = []
+        
+        for wp in self.wps:
+            lons.append(wp.lon)
+            lats.append(wp.lat)            
+            
+        plt.plot(lons,lats,'k.-')
+        plt.xlabel('Longitude [deg]')
+        plt.ylabel('Latitude [deg]')
+        plt.axis('equal')
+        
+        
+        
+        
+
 class Waypoint:
     """
-    Waypoint: contains the name and location of a waypoint
+    Waypoint
+    
+    contains the name and location of a waypoint
     """
     
     name = "WPNT"   # name 
@@ -44,7 +85,7 @@ def getHeadingAndDistance(wp1, wp2):
     x = np.cos(lat1)*np.sin(lat2) - -np.sin(lat1)*np.cos(lat2)*np.cos(dlon)
     q = np.arctan2(y, x)
     
-    h = np.mod(-(q*rad - 90), 360)
+    h = np.mod((q*rad), 360)
     
     return h, d
 
@@ -53,3 +94,9 @@ wp1 = Waypoint('START',0,0)
 wp2 = Waypoint('END',-1,1)
 
 [head, dist] = getHeadingAndDistance(wp1, wp2)
+
+fp = FlightPlan()
+fp.addWaypoint(wp1)
+fp.addWaypoint(wp2)
+
+fp.plotFlightPlan()
