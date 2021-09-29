@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Sep 27 09:00:58 2021
-
-@author: Chun-Yi Wu
-"""
-
 from AvCalc import *
 
 wp1 = Waypoint('START',0,0)
@@ -18,3 +11,6 @@ fp.addWaypoint(wp1)
 fp.addWaypoint(wp2)
 
 fp.plotFlightPlan()
+
+
+map = Basemap(projection='ortho',lat_0=45,lon_0=-100,resolution='l')

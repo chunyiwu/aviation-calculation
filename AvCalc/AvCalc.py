@@ -1,15 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Sep 26 21:06:06 2021
-
-@author: Chun-Yi Wu
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 
 """Constants/parameters"""
-REarth = 3443.92        # Earth radius in nautical mile
+REarth = 3443.92    # Earth radius in nautical mile
 deg = np.pi / 180   # degrees to radians
 rad = 180 / np.pi   # radians to degrees
 
@@ -61,6 +54,7 @@ class Waypoint:
     lat = 0         # latitude in degrees
     lon = 0         # longitude in degress
     
+    """ constructor """    
     def __init__(self, name, lat, lon):
         self.name = name
         self.lat = lat
@@ -161,3 +155,5 @@ def getRhumbLineHeadingDistance(wp1, wp2):
     
     
 """ Auxillary functions """
+
+    
