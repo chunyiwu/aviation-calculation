@@ -14,3 +14,5 @@ fp.plotFlightPlan()
 
 
 map = Basemap(projection='ortho',lat_0=45,lon_0=-100,resolution='l')
+
+print("hello pilot")
